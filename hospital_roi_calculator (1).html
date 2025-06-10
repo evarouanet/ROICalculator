@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Supply Cost Reduction ROI Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .input-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .input-group {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .input-group h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .slider-container {
+            margin-top: 10px;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .results-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .metric-value {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #27ae60;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            color: #7f8c8d;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+        
+        .comparison-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        th {
+            background: #34495e;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .positive {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        .currency {
+            font-family: 'Courier New', monospace;
+        }
+        
+        @media (max-width: 768px) {
+            .input-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Hospital Supply Cost Reduction ROI Calculator</h1>
+            <p>Calculate the financial impact of reducing medical supply costs on hospital profitability</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <div class="input-group">
+                    <h3>Hospital Profile</h3>
+                    
+                    <div class="form-group">
+                        <label for="hospitalType">Hospital Type</label>
+                        <select id="hospitalType" onchange="updateBaseline()">
+                            <option value="nonprofit">Non-Profit Hospital</option>
+                            <option value="forprofit">For-Profit Hospital</option>
+                            <option value="public">Public/Government Hospital</option>
+                            <option value="rural">Rural Hospital</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="revenueSize">Revenue Size</label>
+                        <select id="revenueSize" onchange="updateBaseline()">
+                            <option value="small">Under $500M</option>
+                            <option value="medium">$500M - $1B</option>
+                            <option value="large">Over $1B</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="annualRevenue">Annual Revenue ($M)</label>
+                        <input type="number" id="annualRevenue" value="300" min="1" onchange="calculateROI()">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <h3>Cost Reduction Parameters</h3>
+                    
+                    <div class="form-group">
+                        <label for="currentMargin">Current Net Profit Margin (%)</label>
+                        <input type="number" id="currentMargin" value="1.0" step="0.1" onchange="calculateROI()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="supplyCostPercent">Supply Costs as % of Revenue</label>
+                        <input type="number" id="supplyCostPercent" value="15" step="0.5" min="5" max="30" onchange="calculateROI()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="costReduction">Cost Reduction Target: <span id="reductionValue">10</span>%</label>
+                        <div class="slider-container">
+                            <input type="range" id="costReduction" class="slider" min="5" max="50" value="10" step="1" oninput="updateSlider(); calculateROI();">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="results-section">
+                <h3 style="margin-bottom: 25px; color: #2c3e50; font-size: 1.5em;">Financial Impact Analysis</h3>
+                
+                <div class="results-grid">
+                    <div class="metric-card">
+                        <div class="metric-value currency" id="costSavings">$0.0M</div>
+                        <div class="metric-label">Annual Cost Savings</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-value currency" id="newProfit">$0.0M</div>
+                        <div class="metric-label">New Net Profit</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-value" id="newMargin">0.0%</div>
+                        <div class="metric-label">New Profit Margin</div>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-value positive" id="profitIncrease">0%</div>
+                        <div class="metric-label">Profit Increase</div>
+                    </div>
+                </div>
+                
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Current</th>
+                                <th>After Reduction</th>
+                                <th>Change</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Annual Revenue</td>
+                                <td class="currency" id="currentRevenue">$300.0M</td>
+                                <td class="currency" id="newRevenue">$300.0M</td>
+                                <td>No Change</td>
+                            </tr>
+                            <tr>
+                                <td>Supply Costs</td>
+                                <td class="currency" id="currentSupplyCosts">$45.0M</td>
+                                <td class="currency" id="newSupplyCosts">$40.5M</td>
+                                <td class="positive" id="supplyCostChange">-$4.5M</td>
+                            </tr>
+                            <tr>
+                                <td>Net Profit</td>
+                                <td class="currency" id="currentProfit">$3.0M</td>
+                                <td class="currency" id="tableNewProfit">$7.5M</td>
+                                <td class="positive" id="profitChange">+$4.5M</td>
+                            </tr>
+                            <tr>
+                                <td>Profit Margin</td>
+                                <td id="currentMarginDisplay">1.0%</td>
+                                <td id="tableNewMargin">2.5%</td>
+                                <td class="positive" id="marginChange">+1.5%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Baseline data from the document
+        const baselines = {
+            nonprofit: {
+                small: { margin: 1.0, revenue: 300 },
+                medium: { margin: 3.0, revenue: 750 },
+                large: { margin: 5.0, revenue: 2000 }
+            },
+            forprofit: {
+                small: { margin: 5.0, revenue: 300 },
+                medium: { margin: 8.0, revenue: 750 },
+                large: { margin: 10.0, revenue: 2000 }
+            },
+            public: {
+                small: { margin: 0.0, revenue: 300 },
+                medium: { margin: 2.0, revenue: 750 },
+                large: { margin: 4.0, revenue: 2000 }
+            },
+            rural: {
+                small: { margin: 1.0, revenue: 300 },
+                medium: { margin: 1.7, revenue: 750 },
+                large: { margin: 0.2, revenue: 2000 }
+            }
+        };
+        
+        function updateBaseline() {
+            const hospitalType = document.getElementById('hospitalType').value;
+            const revenueSize = document.getElementById('revenueSize').value;
+            
+            const baseline = baselines[hospitalType][revenueSize];
+            document.getElementById('currentMargin').value = baseline.margin;
+            document.getElementById('annualRevenue').value = baseline.revenue;
+            
+            calculateROI();
+        }
+        
+        function updateSlider() {
+            const value = document.getElementById('costReduction').value;
+            document.getElementById('reductionValue').textContent = value;
+        }
+        
+        function calculateROI() {
+            const annualRevenue = parseFloat(document.getElementById('annualRevenue').value) || 0;
+            const currentMargin = parseFloat(document.getElementById('currentMargin').value) || 0;
+            const supplyCostPercent = parseFloat(document.getElementById('supplyCostPercent').value) || 15;
+            const costReduction = parseFloat(document.getElementById('costReduction').value) || 10;
+            
+            // Calculations
+            const currentProfit = annualRevenue * (currentMargin / 100);
+            const currentSupplyCosts = annualRevenue * (supplyCostPercent / 100);
+            const costSavings = currentSupplyCosts * (costReduction / 100);
+            const newProfit = currentProfit + costSavings;
+            const newMargin = (newProfit / annualRevenue) * 100;
+            const profitIncrease = currentProfit > 0 ? ((newProfit - currentProfit) / currentProfit) * 100 : 0;
+            const newSupplyCosts = currentSupplyCosts - costSavings;
+            
+            // Update display
+            document.getElementById('costSavings').textContent = `$${costSavings.toFixed(1)}M`;
+            document.getElementById('newProfit').textContent = `$${newProfit.toFixed(1)}M`;
+            document.getElementById('newMargin').textContent = `${newMargin.toFixed(1)}%`;
+            document.getElementById('profitIncrease').textContent = `${profitIncrease.toFixed(0)}%`;
+            
+            // Update table
+            document.getElementById('currentRevenue').textContent = `$${annualRevenue.toFixed(1)}M`;
+            document.getElementById('newRevenue').textContent = `$${annualRevenue.toFixed(1)}M`;
+            document.getElementById('currentSupplyCosts').textContent = `$${currentSupplyCosts.toFixed(1)}M`;
+            document.getElementById('newSupplyCosts').textContent = `$${newSupplyCosts.toFixed(1)}M`;
+            document.getElementById('supplyCostChange').textContent = `-$${costSavings.toFixed(1)}M`;
+            document.getElementById('currentProfit').textContent = `$${currentProfit.toFixed(1)}M`;
+            document.getElementById('tableNewProfit').textContent = `$${newProfit.toFixed(1)}M`;
+            document.getElementById('profitChange').textContent = `+$${costSavings.toFixed(1)}M`;
+            document.getElementById('currentMarginDisplay').textContent = `${currentMargin.toFixed(1)}%`;
+            document.getElementById('tableNewMargin').textContent = `${newMargin.toFixed(1)}%`;
+            document.getElementById('marginChange').textContent = `+${(newMargin - currentMargin).toFixed(1)}%`;
+        }
+        
+        // Initialize calculator
+        updateBaseline();
+        calculateROI();
+    </script>
+</body>
+</html>
